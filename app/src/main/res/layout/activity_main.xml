@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="nhviewmodel"
+            type="tk.kvakva.shownicehashstat.NhViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutOrgId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:visibility="@{nhviewmodel.showPassUserLayout ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@+id/textInputLayoutApiKey"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/OrgIdET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Organization ID"
+                android:inputType="text"
+                android:text="@={nhviewmodel.nhOrgId}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutApiKey"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:visibility="@{nhviewmodel.showPassUserLayout ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@+id/textInputLayoutApiSecret"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textInputLayoutOrgId"
+
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ApiKeyET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="PaZsW0rdKey"
+                android:inputType="textPassword"
+                android:text="@={nhviewmodel.nhApiKey}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutApiSecret"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:visibility="@{nhviewmodel.showPassUserLayout ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@+id/SetBT"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutApiKey"
+
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ApiSecretET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="PaZsW0rdSecret"
+                android:inputType="textPassword"
+                android:text="@={nhviewmodel.nhApiSecret}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/SetBT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{() -> nhviewmodel.onClinkSetApiKeySecret()}"
+            android:text="Set"
+
+            android:visibility="@{nhviewmodel.showPassUserLayout ? View.VISIBLE : View.GONE}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutApiSecret" />
+
+        <TextView
+            android:id="@+id/btcBalanceNextTv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/colorEdgeEffect"
+            android:text="@{nhviewmodel.btcBalanceNext}"
+            android:textColor="@android:color/white"
+            android:textIsSelectable="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/SetBT"
+            tools:text="BTC: Bal: Next:" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/MinersStatusRecView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@android:color/holo_green_dark"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toTopOf="@+id/DebugTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btcBalanceNextTv">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/DebugTextView"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:gravity="bottom"
+            android:scrollbars="vertical"
+            android:text="@{nhviewmodel.textviewtxt}"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            tools:text="123456789987" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

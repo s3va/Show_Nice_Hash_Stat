@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:background="@android:color/holo_green_light"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/rigIdTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="rigId"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/rigNameTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="rigName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rigIdTv" />
+
+    <TextView
+        android:id="@+id/unpaidMiningBalanceTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="unpaindMiningBalance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rigNameTv" />
+
+    <TextView
+        android:id="@+id/rigStatusTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="rigStatus"
+        app:layout_constraintBaseline_toBaselineOf="@+id/rigIdTv"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/devListLinLay"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rebootBt" />
+
+    <Button
+        android:id="@+id/rebootBt"
+        style="@android:style/Widget.Material.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reboot"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rigIdTv" />
+
+    <Button
+        android:id="@+id/stopBt"
+        style="@android:style/Widget.Material.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="stop"
+        app:layout_constraintEnd_toStartOf="@+id/rebootBt"
+        app:layout_constraintTop_toBottomOf="@+id/rigIdTv" />
+
+    <Button
+        android:id="@+id/startBt"
+        style="@android:style/Widget.Material.Button.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/stopBt"
+        app:layout_constraintTop_toBottomOf="@+id/rigIdTv"
+        app:layout_constraintVertical_bias="0.0" />
+</androidx.constraintlayout.widget.ConstraintLayout>
