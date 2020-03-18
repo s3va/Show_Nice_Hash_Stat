@@ -105,18 +105,24 @@
             app:layout_constraintTop_toBottomOf="@+id/SetBT"
             tools:text="BTC: Bal: Next:" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/MinersStatusRecView"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/SwipeLayoutRefresh"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@android:color/holo_green_dark"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/DebugTextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btcBalanceNextTv">
 
-        </androidx.recyclerview.widget.RecyclerView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/MinersStatusRecView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@android:color/holo_green_dark"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+
+            </androidx.recyclerview.widget.RecyclerView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <TextView
             android:id="@+id/DebugTextView"

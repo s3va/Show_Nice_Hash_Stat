@@ -1,6 +1,8 @@
 package tk.kvakva.shownicehashstat
 
 import android.app.Application
+import android.app.AuthenticationRequiredException
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.edit
@@ -18,10 +20,14 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.launch
+import okhttp3.Authenticator
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
 import retrofit2.http.*
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
@@ -38,6 +44,7 @@ const val BASEURL = "https://api2.nicehash.com"
 
 // const val PATH_MINING_INFO = "/main/api/v2/mining/info"
 const val PATH_SERVER_TIME = "/api/v2/time"
+
 // const val PATH_GRP_LIST = "/main/api/v2/mining/groups/list"
 // const val PATH_MININGS_RIGS = "/main/api/v2/mining/rigs"
 const val PATH_MININGS_RIGS2 = "/main/api/v2/mining/rigs2"
@@ -45,6 +52,10 @@ const val PATH_ACCOUNTING2_BTC = "/main/api/v2/accounting/account2/BTC"
 const val PATH_RIGS_STATUS2 = "/main/api/v2/mining/rigs/status2"
 
 class NhViewModel(application: Application) : AndroidViewModel(application) {
+
+    private var _showRefreshLayout = MutableLiveData<Boolean>()
+    val showRefreshLayout: LiveData<Boolean>
+        get() = _showRefreshLayout
 
     private var _showPassUserLayout = MutableLiveData<Boolean>()
     val showPassUserLayout: LiveData<Boolean>
@@ -87,6 +98,8 @@ class NhViewModel(application: Application) : AndroidViewModel(application) {
         get() = _textviewtxt
 
     fun onClinkGetNiceHashStatistics() {
+        _showRefreshLayout.value=true
+
         var xTime: Long
         //var xTime = System.currentTimeMillis()
         var xTimes: String
@@ -134,39 +147,39 @@ class NhViewModel(application: Application) : AndroidViewModel(application) {
 //            val nicehashTime = NicehashApi.retrofitService.getNiceHashTime()
             //---------------
             //getNiceHashMiningGrpList
- /*           xTime = System.currentTimeMillis()
-            xTimes = xTime.toString()
-            xNonce = UUID.randomUUID().toString()
-            xOrganizationId = nhOrgId.value.orEmpty()
-            xRequestId = UUID.randomUUID().toString()
+            /*           xTime = System.currentTimeMillis()
+                       xTimes = xTime.toString()
+                       xNonce = UUID.randomUUID().toString()
+                       xOrganizationId = nhOrgId.value.orEmpty()
+                       xRequestId = UUID.randomUUID().toString()
 
-            inputstring = nhApiKey.value?.toByteArray(Charsets.ISO_8859_1)?.plus(0.toByte())
-                ?.plus(xTimes.toByteArray(Charsets.ISO_8859_1))?.plus(0.toByte())
-                ?.plus(xNonce.toByteArray(Charsets.ISO_8859_1))?.plus(0.toByte())?.plus(0.toByte())
-                ?.plus(xOrganizationId.toByteArray(Charsets.ISO_8859_1))?.plus(0.toByte())
-                ?.plus(0.toByte())?.plus("GET".toByteArray(Charsets.ISO_8859_1))?.plus(0.toByte())
-                ?.plus(PATH_GRP_LIST.toByteArray(Charsets.ISO_8859_1))?.plus(0.toByte())
-                ?.plus("extendedResponse=true".toByteArray(Charsets.ISO_8859_1))
+                       inputstring = nhApiKey.value?.toByteArray(Charsets.ISO_8859_1)?.plus(0.toByte())
+                           ?.plus(xTimes.toByteArray(Charsets.ISO_8859_1))?.plus(0.toByte())
+                           ?.plus(xNonce.toByteArray(Charsets.ISO_8859_1))?.plus(0.toByte())?.plus(0.toByte())
+                           ?.plus(xOrganizationId.toByteArray(Charsets.ISO_8859_1))?.plus(0.toByte())
+                           ?.plus(0.toByte())?.plus("GET".toByteArray(Charsets.ISO_8859_1))?.plus(0.toByte())
+                           ?.plus(PATH_GRP_LIST.toByteArray(Charsets.ISO_8859_1))?.plus(0.toByte())
+                           ?.plus("extendedResponse=true".toByteArray(Charsets.ISO_8859_1))
 
-            Log.d(
-                "M_NhViewModel",
-                "!!!!!!!!!!!!!!!!!! ${nhApiKey.value} 0 $xTimes 0 $xNonce 0 0 $xOrganizationId 0 0 GET 0 $PATH_SERVER_TIME !!!!!!!!!!!!!!!!!!!!!!!!!"
-            )
+                       Log.d(
+                           "M_NhViewModel",
+                           "!!!!!!!!!!!!!!!!!! ${nhApiKey.value} 0 $xTimes 0 $xNonce 0 0 $xOrganizationId 0 0 GET 0 $PATH_SERVER_TIME !!!!!!!!!!!!!!!!!!!!!!!!!"
+                       )
 
-            nhsha265HMAC = Mac.getInstance("HmacSHA256")
-            //val apisecret = SecretKeySpec(nhApiSecret.value?.toByteArray(Charsets.ISO_8859_1), "HmacSHA256")
-            nhsha265HMAC.init(apisecret)
-            hash = Hex.encode(nhsha265HMAC.doFinal(inputstring))
-            headerMap = mapOf(
-                "Accept" to "application/json",
-                "X-Time" to xTimes,
-                "X-Nonce" to xNonce,
-                "X-Organization-Id" to xOrganizationId,
-                "X-Request-Id" to xRequestId,
-                "X-Auth" to nhApiKey.value + ":" + hash
-            )
+                       nhsha265HMAC = Mac.getInstance("HmacSHA256")
+                       //val apisecret = SecretKeySpec(nhApiSecret.value?.toByteArray(Charsets.ISO_8859_1), "HmacSHA256")
+                       nhsha265HMAC.init(apisecret)
+                       hash = Hex.encode(nhsha265HMAC.doFinal(inputstring))
+                       headerMap = mapOf(
+                           "Accept" to "application/json",
+                           "X-Time" to xTimes,
+                           "X-Nonce" to xNonce,
+                           "X-Organization-Id" to xOrganizationId,
+                           "X-Request-Id" to xRequestId,
+                           "X-Auth" to nhApiKey.value + ":" + hash
+                       )
 
-            val grpList = NicehashApi.retrofitService.getNiceHashMiningGrpLst(headerMap, "true")*/
+                       val grpList = NicehashApi.retrofitService.getNiceHashMiningGrpLst(headerMap, "true")*/
             //---------------------
 
             //getNiceHasAccounting2Btc
@@ -203,11 +216,14 @@ class NhViewModel(application: Application) : AndroidViewModel(application) {
             )
 
             val mAccount2 = try {
-                val mAccounts2Btc = NicehashApi.retrofitService.getNiceHashAccounging2Btc(headerMap,"true")
+                val mAccounts2Btc = NicehashApi.retrofitService.getNiceHashAccounging2Btc(headerMap, "true")
                 "active: ${mAccounts2Btc.active}\navailable:${mAccounts2Btc.available} ${mAccounts2Btc.currency}  ----- pending:${mAccounts2Btc.pending} ${mAccounts2Btc.currency}\n"
             } catch (e: HttpException) {
                 e.printStackTrace()
-                Toast.makeText(getApplication(),"" + e.code() + " " + e.message() + "\n" + e.response(),Toast.LENGTH_LONG).show()
+                Log.d("M_NhViewModel","code: " + e.code() + " message: " + e.message() + "\nresponce: " + e.response())
+                Toast.makeText(getApplication(), "" + e.code() + " " + e.message() + "\n" + e.response(), Toast.LENGTH_LONG).show()
+                _showPassUserLayout.postValue(true)
+                return@launch
                 ""
             }
             //----------------------
@@ -245,11 +261,266 @@ class NhViewModel(application: Application) : AndroidViewModel(application) {
                 "X-Auth" to nhApiKey.value + ":" + hash
             )
 
-             val nicehashMinigRigs2 = NicehashApi.retrofitService.getNiceHashMiningRigs2(headerMap)
+            val nicehashMinigRigs2 = NicehashApi.retrofitService.getNiceHashMiningRigs2(headerMap)
             _nicehashRigsList.postValue(nicehashMinigRigs2.miningRigs)
-            _btcBalanceNext.postValue("BTC: ${nicehashMinigRigs2.btcAddress}\nunpaid:${nicehashMinigRigs2.unpaidAmount}       nextPayout:${nicehashMinigRigs2.nextPayoutTimestamp}\n\n$mAccount2")
+            val t = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm.ss").format(Instant.parse(nicehashMinigRigs2.nextPayoutTimestamp).atZone(ZoneId.systemDefault()))
+            } else {
+                nicehashMinigRigs2.nextPayoutTimestamp
+            }
+            _btcBalanceNext.postValue("BTC: ${nicehashMinigRigs2.btcAddress}\nunpaid:${nicehashMinigRigs2.unpaidAmount}       nextPayout:$t\n\n$mAccount2")
+
+            _showRefreshLayout.postValue(false)
+
             //----------------------
 
+/*
+            val testListRigs = listOf<NiceHashMiningRigs2.MiningRig>(
+                NiceHashMiningRigs2.MiningRig(
+                    cpuExists = true,
+                    cpuMiningEnabled = true,
+                    devices = listOf<NiceHashMiningRigs2.MiningRig.Device>(
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId001.001", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            100.0, "dwevName001001", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 36.6
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId001.002", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            99.0, "dwevName001002", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 36.7
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId001.003", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            98.0, "dwevName001003", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 36.8
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId001.004", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            97.0, "dwevName001004", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 36.9
+                        )
+                    ),
+                    groupName = "groupName001",
+                    joinTime = 123123,
+                    minerStatus = "ONLINE",
+                    name = "rigNmae001",
+                    notifications = emptyList(),
+                    profitability = 123123.0,
+                    rigId = "rigId001",
+                    rigPowerMode = "rigPowerMode01",
+                    softwareVersions = "softwareVersion",
+                    stats = null,
+                    statusTime = 123123,
+                    type = "MANAGED",
+                    unpaidAmount = "0.00000076"
+                ),
+                NiceHashMiningRigs2.MiningRig(
+                    cpuExists = true,
+                    cpuMiningEnabled = true,
+                    devices = listOf<NiceHashMiningRigs2.MiningRig.Device>(
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId002.001", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            99.0, "dwevName002001", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 37.6
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId002.002", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            99.2, "dwevName002002", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 37.7
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId002.003", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            98.2, "dwevName002003", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 37.8
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId002.004", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            97.2, "dwevName002004", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 37.9
+                        )
+                    ),
+                    groupName = "groupName001",
+                    joinTime = 123123,
+                    minerStatus = "ONLINE",
+                    name = "rigName002",
+                    notifications = emptyList(),
+                    profitability = 100002.0,
+                    rigId = "rigId002",
+                    rigPowerMode = "rigPowerMode01",
+                    softwareVersions = "softwareVersion",
+                    stats = null,
+                    statusTime = 11111112,
+                    type = "MANAGED",
+                    unpaidAmount = "0.00000076"
+                ),
+                NiceHashMiningRigs2.MiningRig(
+                    cpuExists = true,
+                    cpuMiningEnabled = true,
+                    devices = listOf<NiceHashMiningRigs2.MiningRig.Device>(
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId003.001", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            80.0, "dwevName003001", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.6
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId003.002", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            89.0, "dwevName003002", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.7
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId003.003", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            88.0, "dwevName003003", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.8
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId003.004", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            87.0, "dwevName003004", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.9
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId003.005", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            87.0, "dwevName003005", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.9
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId003.006", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            87.0, "dwevName003006", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.9
+                        )
+                    ),
+                    groupName = "groupName001",
+                    joinTime = 123123,
+                    minerStatus = "ONLINE",
+                    name = "Rig003nameDeviceString",
+                    notifications = emptyList(),
+                    profitability = 100002.0,
+                    rigId = "rigId003",
+                    rigPowerMode = "rigPowerMode03",
+                    softwareVersions = "softwareVersion",
+                    stats = null,
+                    statusTime = 11111112,
+                    type = "MANAGED",
+                    unpaidAmount = "0.00000076"
+
+
+                ),
+                NiceHashMiningRigs2.MiningRig(
+                    cpuExists = true,
+                    cpuMiningEnabled = true,
+                    devices = listOf<NiceHashMiningRigs2.MiningRig.Device>(
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId004.001", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            80.0, "dwevName004001", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.6
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId004.002", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            89.0, "dwevName004002", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.7
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId004.003", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            88.0, "dwevName004003", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.8
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId004.004", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            87.0, "dwevName004004", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.9
+                        )
+                    ),
+                    groupName = "groupName001",
+                    joinTime = 123123,
+                    minerStatus = "ONLINE",
+                    name = "name004DeviceString",
+                    notifications = emptyList(),
+                    profitability = 100002.0,
+                    rigId = "rigId004",
+                    rigPowerMode = "rigPowerMode04",
+                    softwareVersions = "softwareVersion",
+                    stats = null,
+                    statusTime = 11111112,
+                    type = "MANAGED",
+                    unpaidAmount = "0.000004076"
+
+
+                ),
+                NiceHashMiningRigs2.MiningRig(
+                    cpuExists = true,
+                    cpuMiningEnabled = true,
+                    devices = listOf<NiceHashMiningRigs2.MiningRig.Device>(
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId005.001", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            80.0, "dwevName005001", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.6
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId005.002", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            89.0, "dwevName005002", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.7
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId005.003", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            88.0, "dwevName005003", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.8
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId005.004", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            87.0, "dwevName005004", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.9
+                        ),
+                        NiceHashMiningRigs2.MiningRig.Device(
+                            NiceHashMiningRigs2.MiningRig.Device.DeviceType("Nvidia", "NVIDIA"),
+                            "devId005.005", NiceHashMiningRigs2.MiningRig.Device.Intensity("intens", "intenc"),
+                            87.0, "dwevName005005", NiceHashMiningRigs2.MiningRig.Device.PowerMode("powerSesc", "POWERMODEe"), 0.0,
+                            emptyList(), NiceHashMiningRigs2.MiningRig.Device.Status("status", "STATUS"), 38.9
+                        )
+                    ),
+                    groupName = "groupName001",
+                    joinTime = 123123,
+                    minerStatus = "ONLINE",
+                    name = "nameDeviceStrin005g",
+                    notifications = emptyList(),
+                    profitability = 100002.0,
+                    rigId = "rigId005",
+                    rigPowerMode = "rigPowerMode05",
+                    softwareVersions = "softwareVersion",
+                    stats = null,
+                    statusTime = 11111112,
+                    type = "MANAGED",
+                    unpaidAmount = "0.00000076"
+
+                )
+
+
+            )
+
+            //_nicehashRigsList.postValue(testListRigs + nicehashMinigRigs2.miningRigs)
+            _nicehashRigsList.postValue( nicehashMinigRigs2.miningRigs.orEmpty() + testListRigs )*/
+            Toast.makeText(getApplication(),"refreshed",Toast.LENGTH_LONG).show()
 
 /*            val grpLstStringBuilder = StringBuilder()
             grpLstStringBuilder.append("\n------------------------\n")
@@ -309,6 +580,7 @@ class NhViewModel(application: Application) : AndroidViewModel(application) {
             "M_SNHSViewModel",
             "SNHSViewModel init.  Application.packageName: ${application.packageName}"
         )
+        _showRefreshLayout.value=false
         nhApiKey.value = sharedPreferences.getString(API_KEY, "")
         nhApiSecret.value = sharedPreferences.getString(API_SECRET, "")
         nhOrgId.value = sharedPreferences.getString(API_ORG_ID, "")
@@ -319,6 +591,7 @@ class NhViewModel(application: Application) : AndroidViewModel(application) {
         ) {
             _showPassUserLayout.value = true
         }
+        onClinkGetNiceHashStatistics()
     }
 
 }
@@ -356,16 +629,16 @@ interface NicehashApiService {
     // @GET("info/serviceList")
 //    suspend fun getNiceHashMiningInfo(@Query("ctn") number: String, @Query("token") token: String):
 
-/*
-    @GET(PATH_MINING_INFO)
-    suspend fun getNiceHashMiningInfo(@HeaderMap headerMap: Map<String, String>):
-            MiningInfo
+    /*
+        @GET(PATH_MINING_INFO)
+        suspend fun getNiceHashMiningInfo(@HeaderMap headerMap: Map<String, String>):
+                MiningInfo
 
 
-    @GET(PATH_GRP_LIST)
-    suspend fun getNiceHashMiningGrpLst(  @HeaderMap headerMap: Map<String, String>, @Query("extendedResponse") extResp: String):
-            GrpList
-*/
+        @GET(PATH_GRP_LIST)
+        suspend fun getNiceHashMiningGrpLst(  @HeaderMap headerMap: Map<String, String>, @Query("extendedResponse") extResp: String):
+                GrpList
+    */
     @GET(PATH_ACCOUNTING2_BTC)
     suspend fun getNiceHashAccounging2Btc(@HeaderMap headerMap: Map<String, String>, @Query("extendedResponse") extResp: String):
             Accounting2Btc

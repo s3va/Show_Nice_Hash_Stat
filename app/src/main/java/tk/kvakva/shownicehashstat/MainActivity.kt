@@ -35,7 +35,15 @@ class MainActivity : AppCompatActivity() {
                 recyclerViewApapter.data = it
             }
         })
+        binding.SwipeLayoutRefresh.setOnRefreshListener {
+            Log.d("M_MainActivity","onRefresh called from SwipeRefreshLayout")
+            niceHashVM.onClinkGetNiceHashStatistics()
+        }
 
+        niceHashVM.showRefreshLayout.observe(this, Observer {
+            if(it)
+                binding.SwipeLayoutRefresh.isRefreshing=false
+        })
 
     }
 

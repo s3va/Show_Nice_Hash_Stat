@@ -66,10 +66,16 @@ class NiceHashMiningRigsRecyclerViewApapter :
                 val mTextViewId = TextView(itemView.context)
                 mTextViewId.text = "${it?.id}"
                 val mTextViewTemp = TextView(itemView.context)
-                mTextViewTemp.text = "T:${it?.temperature} C\u00B0      Power:${it?.load} %      ${it?.powerMode?.enumName} "
+                mTextViewTemp.text = "T:${it?.temperature} C\u00B0      Power:${it?.load} %      ${it?.powerMode?.enumName}"
+
                 itemView.devListLinLay.addView(mTextViewName)
                 itemView.devListLinLay.addView(mTextViewId)
                 itemView.devListLinLay.addView(mTextViewTemp)
+                if (it?.speeds.orEmpty().isNotEmpty()) {
+                    val mTextViewAlgo = TextView(itemView.context)
+                    mTextViewAlgo.text = "Algo: ${it?.speeds?.first()?.title} ${it?.speeds?.first()?.speed} ${it?.speeds?.first()?.displaySuffix}"
+                    itemView.devListLinLay.addView(mTextViewAlgo)
+                }
                 mTextViewName.updateLayoutParams<LinearLayout.LayoutParams> {
                     topMargin = (itemView.context.resources.displayMetrics.density * 8 + 0.5).toInt()
                 }
