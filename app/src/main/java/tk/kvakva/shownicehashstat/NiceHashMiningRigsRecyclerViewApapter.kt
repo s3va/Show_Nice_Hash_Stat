@@ -71,7 +71,7 @@ class NiceHashMiningRigsRecyclerViewApapter :
                 val mTextViewId = TextView(itemView.context)
                 mTextViewId.text = "${it?.id}"
                 val mTextViewTemp = TextView(itemView.context)
-                mTextViewTemp.text = "T:${it?.temperature} C\u00B0      Power:${it?.load} %      ${it?.powerMode?.enumName}"
+                mTextViewTemp.text = "T:${it?.temperature} C\u00B0    Power:${it?.load} %    ${it?.powerMode?.enumName}    ${it?.revolutionsPerMinute} RPM"
 
                 itemView.devListLinLay.addView(mTextViewName)
                 itemView.devListLinLay.addView(mTextViewId)
