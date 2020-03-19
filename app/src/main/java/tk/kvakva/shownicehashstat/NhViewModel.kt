@@ -264,7 +264,7 @@ class NhViewModel(application: Application) : AndroidViewModel(application) {
             val nicehashMinigRigs2 = NicehashApi.retrofitService.getNiceHashMiningRigs2(headerMap)
             _nicehashRigsList.postValue(nicehashMinigRigs2.miningRigs)
             val t = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm.ss").format(Instant.parse(nicehashMinigRigs2.nextPayoutTimestamp).atZone(ZoneId.systemDefault()))
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(Instant.parse(nicehashMinigRigs2.nextPayoutTimestamp).atZone(ZoneId.systemDefault()))
             } else {
                 nicehashMinigRigs2.nextPayoutTimestamp
             }
