@@ -5,8 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="@android:color/holo_green_light"
     android:padding="8dp">
+<!--
+    android:background="@android:color/holo_green_light"
+-->
+
 
     <TextView
         android:id="@+id/rigIdTv"
@@ -14,7 +17,7 @@
         android:layout_height="wrap_content"
         android:text="rigId"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
 
     <TextView
         android:id="@+id/rigNameTv"
@@ -45,38 +48,61 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rebootBt" />
+        app:layout_constraintTop_toBottomOf="@+id/statRigTimeTv" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/rebootBt"
-        style="@android:style/Widget.Material.Button.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Reboot"
+        app:cornerRadius="16dp"
+        android:minHeight="0dp"
+android:minWidth="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rigIdTv" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/stopBt"
-        style="@android:style/Widget.Material.Button.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="stop"
+        app:cornerRadius="16dp"
+        android:minHeight="0dp"
+android:minWidth="0dp"
         app:layout_constraintEnd_toStartOf="@+id/rebootBt"
         app:layout_constraintTop_toBottomOf="@+id/rigIdTv" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/startBt"
-        style="@android:style/Widget.Material.Button.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="start"
+        app:cornerRadius="16dp"
+        android:minHeight="0dp"
+android:minWidth="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/stopBt"
         app:layout_constraintTop_toBottomOf="@+id/rigIdTv"
         app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/statRigTimeTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="statRigTime"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/unpaidMiningBalanceTv" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="4dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

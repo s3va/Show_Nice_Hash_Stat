@@ -1,6 +1,8 @@
 package tk.kvakva.shownicehashstat
 
 import android.graphics.Color
+import android.icu.text.SimpleDateFormat
+import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -58,11 +60,14 @@ class NiceHashMiningRigsRecyclerViewApapter :
             itemView.rebootBt.setOnClickListener {
                 rigsStatus2StopStart(item, "RESTART")
             }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                itemView.statRigTimeTv.text = "statusTime: ${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date(item?.statusTime ?: 0 * 1000L))}"
+            }
             // itemView.devListLinLay.setHasTransientState(true)
             item?.devices?.forEach {
                 val mTextViewName = TextView(itemView.context)
                 mTextViewName.text = "${it?.name}"
-                mTextViewName.setBackgroundColor(Color.CYAN)
+                mTextViewName.setBackgroundColor(Color.DKGRAY)
                 val mTextViewId = TextView(itemView.context)
                 mTextViewId.text = "${it?.id}"
                 val mTextViewTemp = TextView(itemView.context)

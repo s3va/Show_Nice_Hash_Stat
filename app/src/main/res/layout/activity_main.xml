@@ -92,13 +92,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayoutApiSecret" />
 
-        <TextView
+<!--        android:textColor="@android:color/white"-->
+<!--        android:background="?android:attr/colorEdgeEffect"-->
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/btcBalanceNextTv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="?android:attr/colorEdgeEffect"
             android:text="@{nhviewmodel.btcBalanceNext}"
-            android:textColor="@android:color/white"
             android:textIsSelectable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -114,11 +114,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btcBalanceNextTv">
 
+<!--            android:background="@android:color/holo_green_dark"-->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/MinersStatusRecView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="@android:color/holo_green_dark"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
 
             </androidx.recyclerview.widget.RecyclerView>
