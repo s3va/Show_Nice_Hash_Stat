@@ -25,6 +25,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
 import retrofit2.http.*
+import java.security.InvalidKeyException
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -32,6 +33,8 @@ import java.util.concurrent.TimeUnit
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
+
+private const val TAG = "NhViewModel"
 
 const val SECRET_PREF_FN = "secret_shared_prefs"
 const val API_KEY = "APIkey"
@@ -128,8 +131,22 @@ class NhViewModel(application: Application) : AndroidViewModel(application) {
 */
         var nhsha265HMAC = Mac.getInstance("HmacSHA256")
         //var nhsha265HMAC = Mac.getInstance("HmacSHA256")
-        val apisecret = SecretKeySpec(nhApiSecret.value?.toByteArray(Charsets.ISO_8859_1), "HmacSHA256")
-        nhsha265HMAC.init(apisecret)
+        val apisecret = try {
+            SecretKeySpec(nhApiSecret.value?.toByteArray(Charsets.ISO_8859_1), "HmacSHA256")
+        } catch (e: IllegalArgumentException) {
+            _showPassUserLayout.value = true
+            Log.e(TAG, "SecretKeySpec onClinkGetNiceHashStatistics:\n${e.stackTraceToString()}" )
+            Toast.makeText(getApplication(), "" + e.message, Toast.LENGTH_LONG).show()
+            return
+           // null
+        }
+        try {
+            nhsha265HMAC.init(apisecret)
+        } catch (e: InvalidKeyException) {
+            Log.e(TAG, "nhsha265HMAC.init onClinkGetNiceHashStatistics:\n${e.stackTraceToString()}" )
+            _showPassUserLayout.value = true
+            return
+        }
         //var hash = Hex.encode(nhsha265HMAC.doFinal(inputstring))
         var hash: String
 
@@ -590,8 +607,8 @@ class NhViewModel(application: Application) : AndroidViewModel(application) {
             sharedPreferences.getString(API_ORG_ID, "").isNullOrEmpty()
         ) {
             _showPassUserLayout.value = true
-        }
-        onClinkGetNiceHashStatistics()
+        } else
+            onClinkGetNiceHashStatistics()
     }
 
 }
