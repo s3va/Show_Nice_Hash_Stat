@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import okhttp3.Authenticator
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+// import org.apache.commons.codec.binary.Hex
 import retrofit2.HttpException
 import retrofit2.http.*
 import java.security.InvalidKeyException

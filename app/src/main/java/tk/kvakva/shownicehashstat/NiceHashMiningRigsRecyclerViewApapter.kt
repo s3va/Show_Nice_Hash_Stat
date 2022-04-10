@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.nicehash_mining_rig_recyclerview.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+//import org.apache.commons.codec.binary.Hex
 import retrofit2.HttpException
 import java.net.SocketTimeoutException
 import java.util.*
