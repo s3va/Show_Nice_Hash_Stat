@@ -1,8 +1,8 @@
 package tk.kvakva.shownicehashstat
 
 import android.util.Log
-import org.apache.commons.codec.binary.Hex
-//import com.google.crypto.tink.subtle.Hex
+//import org.apache.commons.codec.binary.Hex
+import com.google.crypto.tink.subtle.Hex
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -120,7 +120,7 @@ class ExampleUnitTest {
             SecretKeySpec(secret.toByteArray(Charsets.ISO_8859_1), "HmacSHA256")
         val nhsha265HMAC = Mac.getInstance("HmacSHA256")
         nhsha265HMAC.init(apisecret)
-        val hash = Hex.encodeHexString(nhsha265HMAC.doFinal(inputstring))
+        val hash = Hex.encode(nhsha265HMAC.doFinal(inputstring))
         println("mnha: $accessKey:$hash")
     }
 
